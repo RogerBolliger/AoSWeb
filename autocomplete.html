@@ -1,0 +1,69 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="Font-Awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="x2js/xml2json.min.js"></script>
+
+</head>
+
+<form name="dafValorForm" ng-controller="myCtrl">
+  <div class="bootstrap container-fluid">
+    <div style="width:180px" class="form-group">
+      <label class="control-label">User</label>
+      <input type="text" name="lastName" ng-model="ttUser.lastName" instrument-check>
+    </div>
+  </div>
+</form>
+
+<script>
+  angular.module('myApp',[])
+    .controller('myCtrl',['$scope',function($scope){
+
+  }])
+
+.directive('instrumentCheck',function($http,$q){
+  return{
+    restrict: 'A',
+    require: 'ngModel',
+    scope: {
+      user: '@'
+    },
+    link: function(scope, ele, attrs, ngModel){
+      console.log(ele);
+
+      ele.autocomplete({
+        source : function(request,response){
+
+          $http({method:'get', url:'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=getSmallUserlist' , params:{searchUser:request.term}}).then(
+            function(data){
+              var x2js = new X2JS();
+              var data = x2js.xml_str2json(data.data);
+              var name = [];
+              data = data.dsWebService.ttUser;
+              for (i=0;i<data.length;i++) {
+                name.push(data[i].lastName + ' ' + data[i].firstName);
+              }
+              console.log(name);
+              console.log(data);
+              response(name);
+            })
+
+        },
+        minLength: 3
+      });
+
+    }
+  }
+})
+
+</script>
+
+</body>
+</html>
