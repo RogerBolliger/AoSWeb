@@ -1,0 +1,106 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <!--<link rel="stylesheet" href="Font-Awesome/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="x2js/xml2json.min.js"></script>
+
+</head>
+<body>
+  <div ng-controller="myController">
+      <input id="ip1" type="text" ng-model="myInput">
+  </div>
+  <div ng-controller="otherController">
+      <input id="ip2" type="text" readonly ng-model="otherInput">
+  </div>
+</body>
+
+<script>
+  angular.module('myApp', [])
+
+  .factory('myService', function($rootScope){
+    var srv = {};
+
+    srv.setVal = function(attr,value){
+      srv.obj = {name: ''};
+      srv.obj[attr] = value;
+      $rootScope.$broadcast('newName',srv.getVal('name'));
+      console.log(srv.obj);
+    }
+    srv.getVal = function(attr){
+      return srv.obj[attr];
+    }
+
+    return srv;
+  })
+  .controller('myController', ['$scope', 'myService', function ($scope, myService) {
+
+     var name = 'beat';
+     myService.setVal('name', name);
+
+     $scope.$watch('myInput',function(newValue,oldValue){
+       if (newValue == 'roger') {
+         console.log(newValue);
+         myService.setVal('name', newValue);
+       }
+     });
+  }])
+
+  .controller('otherController', ['$scope', 'myService', '$element', function ($scope, myService, $element) {
+
+    $scope.$on('newName', function(event,name){
+      $scope.otherInput = name ;
+      document.querySelector("[id]").style.backgroundColor = 'green';
+      angular.element(document.querySelector("[id]"))[0].style.color = 'white';
+      //erstes
+      console.log(angular.element(document.querySelector("[id]")));
+      console.log($element.find('[id]'));
+      var element = $element.find('[id]');
+      element.style = {color: "red"};
+    });
+    // Ist nur bei initialisierung des Controllers zu gebrauchen
+    if (myService.getVal('name') === 'beat') {
+      $scope.otherInput = 'Beat';
+    }
+
+  }]);
+
+/**************
+<div ng-controller='MyCtrl'>
+    <div>
+        <div name='foo' class='myElementClass'>this one</div>
+    </div>
+</div>
+This AngularJS code should work:
+
+angular.module('MyClient').controller('MyCtrl', [
+    '$scope',
+    '$element',
+    '$log',
+    function ($scope, $element, $log) {
+
+        // Find the element by its class attribute, within your controller's scope
+        var myElements = $element.find('.myElementClass');
+
+        // myElements is now an array of jQuery DOM elements
+
+        if (myElements.length == 0) {
+            // Not found. Are you sure you've included the full jQuery?
+        } else {
+            // There should only be one, and it will be element 0
+            $log.debug(myElements[0].name); // "foo"
+        }
+
+    }
+]);
+**************/
+
+</script>
+</html>
