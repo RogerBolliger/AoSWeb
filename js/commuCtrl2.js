@@ -2,6 +2,13 @@ angular.module('commuCtrl2',[])
 
   .controller('commuCtrl2', ['$scope', 'commuService', '$element', function ($scope, commuService, $element) {
 
+    $scope.$watch(function($scope){
+      return this.ctrl2Input;
+    },
+    function (newValue,oldValue){
+      console.log(newValue);
+    });
+
     $scope.$on('newMessage', function(event,message){
       this.ctrl2Input = message ;
       document.querySelector("[id]").style.backgroundColor = 'green';
@@ -37,7 +44,10 @@ angular.module('commuCtrl2',[])
     require: 'ngModel',
     link: function(scope,elem,attrs,ngModel){
       console.log(ngModel);
-      scope.$watch(function(){return ngModel}, function(newValue,oldValue){
+
+      scope.$watch(function(scope){
+        return scope.ctrl2;
+      },function(newValue,oldValue){
         console.log(newValue+'/'+oldValue);
       })
 
@@ -52,6 +62,8 @@ angular.module('commuCtrl2',[])
       }
 
       ngModel.$parsers.push(watchInput);
+
+      //console.log(elem[0].html());
 
     }
 

@@ -1,0 +1,58 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <!--<link rel="stylesheet" href="Font-Awesome/css/font-awesome.min.css">-->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+    <script src="x2js/xml2json.min.js"></script>
+
+</head>
+
+    <body class="container-fluid" ng-controller="myCtrl">
+      <div>
+        <ul ng-repeat="user in users">
+            <li id="$index" my-dir>{{user.Nachname}} / {{user.Vorname}}</li>
+        </ul>
+      </div>
+    </body>
+    <script>
+        angular.module('myApp',[])
+        .controller('myCtrl', function($scope,$http){
+           var callback = function(data){
+             var data = data.data;
+             var x2js = new X2JS();
+             data = x2js.xml_str2json(data);
+             $scope.users = data.dsWebService.ttBenutzer;
+           }
+
+           $http({  method: 'GET',
+                    url: 'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p',
+                    params: {serviceName: 'getUserList', searchUser:'bo'}
+                  }).then(function(data){callback(data)})
+
+        })
+        .directive('myDir',function(){
+
+          return {
+            restrict: 'A',
+            template: function(elem,attr){
+
+              return
+
+            }
+            link: function(scope,elem,attr){
+              elem.bind('click', function(){
+
+              });
+            }
+          }
+
+        })
+    </script>
+</html>

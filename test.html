@@ -1,0 +1,52 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="Font-Awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="x2js/xml2json.min.js"></script>
+
+</head>
+
+<form name="dafValorForm" ng-controller="myCtrl">
+  <div class="bootstrap container-fluid">
+    <div style="width:180px" class="form-group">
+      <label class="control-label">User</label>
+      <input type="text" name="lastName" ng-model="ttUser.lastName" instrument-check>
+    </div>
+  </div>
+</form>
+
+<script>
+  angular.module('myApp',[])
+    .controller('myCtrl',['$scope',function($scope){
+
+
+  function User(name, vorname){
+    return {
+      name: name,
+      vorname: vorname,
+      sayName: function(){console.log('my name is ' + name)}
+    }
+  }
+
+  var roger = new User('Bolliger', 'Roger');
+
+
+  console.log(roger.sayName());
+
+
+
+
+  }]);
+
+
+</script>
+
+</body>
+</html>
