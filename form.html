@@ -11,6 +11,7 @@
     <script src="bower_components/jquery-ui/jquery-ui.js"></script>
     <script src="bower_components/angular/angular.min.js"></script>
     <script src="bower_components/angular-messages/angular-messages.min.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
     <script src="x2js/xml2json.min.js"></script>
 
 
@@ -45,14 +46,14 @@
                           add="add()" reset="reset()"
                           delete="delete()" cancel="cancel()"
                           update-fields="updateFields">
-                    <my-panel/>
+                    </my-panel>
             </div>
         </div>
         {{actionStatus}}
     </form>
 </div>
 <script>
-    angular.module('myApp',['ngMessages'])
+    angular.module('myApp',['ngMessages','ui.bootstrap'])
 
     .controller('myCtrl',function($scope){
         $scope.actionStatus = 'view';
@@ -78,9 +79,23 @@
              $scope.dafValor = angular.copy($scope.dafValorOrigin);
              */
         }
+        $scope.delete = function(){
+          alert('delete');
+        }
 
     })
-    .directive('myPanel', function(){
+    .directive('myPanel', function($modal){
+
+      var ModalInstanceCtrl = function($scope, $modalInstance) {
+        $scope.ok = function() {
+          $modalInstance.close();
+        };
+
+        $scope.cancel = function() {
+          $modalInstance.dismiss('cancel');
+        };
+      };
+
         return {
             restrict: 'E',
             scope: {
@@ -173,6 +188,27 @@
                         formCtrl.$setUntouched();
 
                     })
+                };
+                // Delete button
+                btnList[5].onclick = function(){
+
+                    var message = attrs.ngReallyMessage || "Are you sure ?";
+                    var modalHtml = '<div class="modal-body">' + message + '</div>';
+                    modalHtml += '<div class="modal-footer"><button class="btn btn-primary" ng-click="ok()">OK</button><button class="btn btn-warning" ng-click="cancel()">Cancel</button></div>';
+
+                    var modalInstance = $modal.open({
+                      template: modalHtml,
+                      controller: ModalInstanceCtrl
+                    });
+
+                    modalInstance.result.then(function() {
+                      scope.$apply(function(){
+                        scope.action = 'view';
+                        scope.delete();
+                      })
+                    }, function() {
+                      //Modal dismissed
+                    });
                 };
 
                 function enableDisable(){
@@ -322,6 +358,48 @@
       }
 
     })
+    .directive('aosDeleteConfirmation', ['$modal', function($modal) {
+
+      var ModalInstanceCtrl = function($scope, $modalInstance) {
+        $scope.ok = function() {
+          $modalInstance.close();
+        };
+
+        $scope.cancel = function() {
+          $modalInstance.dismiss('cancel');
+        };
+      };
+
+      return {
+        restrict: 'A',
+        scope: { delete: '&' },
+        link: function(scope, element, attrs) {
+          element.bind('click', function() {
+            var message = attrs.ngReallyMessage || "Are you sure ?";
+
+            var modalHtml = '<div class="modal-body">' + message + '</div>';
+            modalHtml += '<div class="modal-footer"><button class="btn btn-primary" ng-click="ok()">OK</button><button class="btn btn-warning" ng-click="cancel()">Cancel</button></div>';
+
+            var modalInstance = $modal.open({
+              template: modalHtml,
+              controller: ModalInstanceCtrl
+            });
+
+            modalInstance.result.then(function() {
+              scope.$apply(function(){
+                scope.action = 'view';
+                scope.delete();
+              })
+            }, function() {
+              //Modal dismissed
+            });
+
+          });
+
+        }
+      }
+    }]);
+
 
 </script>
 </body>
