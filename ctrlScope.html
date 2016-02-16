@@ -1,0 +1,88 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="Font-Awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+
+</head>
+<div class="col-sm-12" ng-controller="parentCtrl">
+
+  <aos-message-box msgs="ttWsInformation">
+      style="display: block; margin-left: auto; margin-right: auto;"
+  </aos-message-box>
+  <div style="background-color: red; display: flex">
+      <div style="background-color: green; width: 20%; float: left; text-align: center;">
+          <i style="vertical-align: middle;" class="fa fa-check-square-o"></i>
+      </div>
+      <div style="background-color: blue; float: left; width: 80%">
+          <ul>
+              <li>fehler 1</li>
+              <li>fehler 2 </li>
+          </ul>
+
+      </div>
+  </div>
+
+  <form name="parentForm">
+      <div class="col-sm-5 form-group" ng-class="{'has-error': userNameError==true}">
+        <label class="control-label">Parent Username</label>
+        <input type="text" class="form-control" placeholder="Enter Name..." name="userName" ng-model="userName" aos-error required>
+      </div>
+  </form>
+</div>
+<script>
+  angular.module('myApp',[])
+  .controller('parentCtrl',function($scope){
+    $scope.userNameError = false;
+    $scope.ttWsInformation = [];
+  })
+  .directive('aosMessageBox',function(){
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: { msgs: '='},
+      template: '<div  ng-show="msgs.length>0">'+
+                '  <div ng-repeat="msg in msgs">' +
+                '    <strong>{{msg.name}}</strong>'+
+                '  </div>'+
+                '</div>'
+    }
+  })
+  .directive('aosError',function(){
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function(scope, elem, attrs, modelCtrl){
+
+        elem.bind('blur',function(){
+
+          if (modelCtrl.$invalid) {
+              var msg = {name: 'is required'};
+              scope.ttWsInformation.push(msg);
+              scope.$apply(function(){
+                scope.ttWsInformation;
+                scope.userNameError = true;
+              });
+          }
+
+        });
+
+        scope.$on('aos-error-check', function(){
+          alert('$on');
+
+        });
+
+      }
+    }
+  });
+
+</script>
+
+</body>
+</html>

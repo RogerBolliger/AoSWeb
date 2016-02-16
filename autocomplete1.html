@@ -1,0 +1,172 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="Font-Awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/semantic.css" />
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="x2js/xml2json.min.js"></script>
+    <script src="js/semantic.js"></script>
+</head>
+
+<form name="dafValorForm" ng-controller="myCtrl">
+  <div class="bootstrap container-fluid">
+    <div class="ui info message">
+      <i class="close icon"></i>
+      <div class="header">
+        Was this what you wanted?
+      </div>
+      <ul class="list">
+        <li>It's good to see you again.</li>
+        <li>Did you know it's been a while?</li>
+      </ul>
+    </div>
+
+    <div style="width:180px" class="form-group">
+      <label class="control-label">User</label>
+      <input class type="text" name="lastName" ng-model="ttUser.lastName" instrument-check>
+    </div>
+    <typeahead
+            title="AccName" subtitle="BillingCity"
+            displaykey="lastName" retkey="AccId"
+            modelret="valRet" modeldisplay="valDis"
+    />
+
+  </div>
+</form>
+<style>
+  .noTopBottomPad
+  {
+  padding-top : 2px !important;
+  padding-bottom : 2px !important;
+  }
+  .overlap {position: absolute !important;
+  z-index: 900 !important; width: inherit  !important ;}
+  .loadImage { background: white url('{!URLFOR($Resource.AutoCompleteWithModal, 'AjaxLoad.gif')}') right center no-repeat; }
+
+</style>
+
+<script>
+  angular.module('myApp',[])
+    .controller('myCtrl',['$scope',function($scope){
+
+  }])
+
+.directive('typeahead', function($timeout,$http,$q) {
+  return {
+    restrict: 'AEC',
+    scope: {
+      title: '@',
+      retkey: '@',
+      displaykey:'@',
+      modeldisplay:'=',
+      subtitle: '@',
+      modelret: '='
+    },
+
+    link: function(scope, elem, attrs) {
+        scope.current = 0;
+        scope.selected = false;
+
+      scope.da  = function(txt){
+          scope.ajaxClass = 'loadImage';
+          var deferred = $q.defer();
+          $http({method:'get', url:'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=getSmallUserlist' , params:{searchUser: txt}}).then(
+            function(data){
+              var x2js = new X2JS();
+              var data = x2js.xml_str2json(data.data);
+              var name = [];
+              data = data.dsWebService.ttUser;
+              for (i=0;i<data.length;i++) {
+                name.push(data[i].lastName + ' ' + data[i].firstName);
+              }
+              console.log(name);
+              console.log(data);
+              scope.TypeAheadData = name;
+              deferred.resolve(name);
+          });
+          return deferred.promise;
+
+          /*
+          $http({method: 'Get', url: 'Account_JSON?AccName='+txt}).
+                success(function(data, status) {
+                  scope.TypeAheadData = data;
+                  scope.ajaxClass = '';
+                }) ;
+          */
+      }
+
+      scope.handleSelection = function(key,val) {
+        scope.modelret = key;
+        scope.modeldisplay = val;
+        scope.current = 0;
+        scope.selected = true;
+      }
+
+      scope.isCurrent = function(index) {
+        return scope.current == index;
+      }
+
+      scope.setCurrent = function(index) {
+        scope.current = index;
+      }
+
+    },
+    template: '<input type="text" ng-model="modeldisplay" ng-KeyPress="da(modeldisplay)"  ng-keydown="selected=false"'+
+                'style="width:100%;" ng-class="ajaxClass">'+
+                '<div class="list-group table-condensed overlap" ng-hide="!modeldisplay.length || selected" style="width:100%">'+
+                    '<a href="javascript:void();" class="list-group-item noTopBottomPad" ng-repeat="item in TypeAheadData|filter:model  track by $index" '+
+                       'ng-click="handleSelection(item[retkey],item[displaykey])" style="cursor:pointer" '+
+                       'ng-class="{active:isCurrent($index)}" '+
+                       'ng-mouseenter="setCurrent($index)">'+
+                         ' {{item[title]}}<br />'+
+                         '<i>{{item[subtitle]}} </i>'+
+                    '</a> '+
+                '</div>'+
+                '</input>'
+  };
+})
+.directive('instrumentCheck',function($http,$q){
+  return{
+    restrict: 'A',
+    require: 'ngModel',
+    scope: {
+      user: '@'
+    },
+    link: function(scope, ele, attrs, ngModel){
+      console.log(ele);
+
+      ele.autocomplete({
+        source : function(request,response){
+
+          $http({method:'get', url:'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=getSmallUserlist' , params:{searchUser:request.term}}).then(
+            function(data){
+              var x2js = new X2JS();
+              var data = x2js.xml_str2json(data.data);
+              var name = [];
+              data = data.dsWebService.ttUser;
+              for (i=0;i<data.length;i++) {
+                name.push(data[i].lastName + ' ' + data[i].firstName);
+              }
+              console.log(name);
+              console.log(data);
+              response(name);
+            })
+
+        },
+        minLength: 1
+      });
+
+    }
+  }
+})
+
+</script>
+
+</body>
+</html>

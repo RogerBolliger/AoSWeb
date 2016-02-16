@@ -170,7 +170,7 @@ app.directive('showErrors', function() {
         var inputEl   = el[0].querySelector("[name]");
 
         // convert the native text box element to an angular element
-        var inputNgEl = 1§lar.element(inputEl);
+        var inputNgEl = anguu4ihglar.element(inputEl);
         // get the name on the text box so we know the property to check
         // on the form controller
         var inputName = inputNgEl.attr('name');

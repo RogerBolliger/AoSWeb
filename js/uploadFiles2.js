@@ -11,66 +11,65 @@ myApp.controller("uploadFilesCtrl",['$scope','uploadService','backendService','$
 
     $scope.addToFileList=function(element){
 
-    for(i=0;i<element.files.length;i++){
-    element.files[i].progressBar=0;
-    element.files[i].progressTxt='';
-    element.files[i].completeTxt='';
-    element.files[i].completeStatus='';
+      for(i=0;i<element.files.length;i++){
+        element.files[i].progressBar=0;
+        element.files[i].progressTxt='';
+        element.files[i].completeTxt='';
+        element.files[i].completeStatus='';
 
-    element.files[i].isSuccess=false;
-    element.files[i].isCancel=false;
-    element.files[i].isError=false;
+        element.files[i].isSuccess=false;
+        element.files[i].isCancel=false;
+        element.files[i].isError=false;
+      }
+      $scope.$apply(function($scope){
+        $scope.files=element.files;
+      });
+      $scope.btnUpload='';
     }
-    $scope.$apply(function($scope){
-    $scope.files=element.files;
-    });
-    $scope.btnUpload='';
+
+
+    $scope.uploadFileList=function(){
+      var service='dafValor.p&serviceName=uploadFiles';
+      var params='';
+
+      var callObj=function(type,files,data){
+        //Meldung von Server nach upload
+        if(type=='1'){
+          /***********Rates*************/
+          $scope.$apply(function($scope){
+            $scope.files=files;
+            $scope.rateUpdate=true;
+            console.log($scope.files);
+          });
+          if($scope.files[0].completeStatus!='danger'){
+            $scope.ttDafRates=data.dsWebService.ttDafRates;
+            console.log($scope.ttDafRates);
+            console.log($scope);
+            for(i=0;i<data.dsWebService.ttWsInformation.length;i++){
+              if(data.dsWebService.ttWsInformation[i].type=='ratesPanelHeading'){
+                $scope.ratesPanelHeading=data.dsWebService.ttWsInformation[i].body;
+                $scope.tab2Rates=false;
+                console.log($scope);
+              }
+            }
+            $scope.$apply(function(){$scope.$broadcast('selectTab',2);});
+            $scope.btnImport='';
+          }
+          else{
+            $scope.btnImport='false';
+          }
+        }
+        //Uploadprogress
+        else if(type='2'){
+          $scope.$apply(function($scope){
+            $scope.files=files;
+          });
+        }
+      }
+
+      uploadService.uploadFile($scope.files,callObj,service);
     }
-
-
-$scope.uploadFileList=function(){
-varservice='dafValor.p&serviceName=uploadFiles';
-
-varparams='';
-
-varcallObj=function(type,files,data){
-//MeldungvonServernachupload
-if(type=='1'){
-/***********Rates*************/
-$scope.$apply(function($scope){
-$scope.files=files;
-$scope.rateUpdate=true;
-console.log($scope.files);
-});
-if($scope.files[0].completeStatus!='danger'){
-$scope.ttDafRates=data.dsWebService.ttDafRates;
-console.log($scope.ttDafRates);
-console.log($scope);
-for(i=0;i<data.dsWebService.ttWsInformation.length;i++){
-if(data.dsWebService.ttWsInformation[i].type=='ratesPanelHeading'){
-$scope.ratesPanelHeading=data.dsWebService.ttWsInformation[i].body;
-$scope.tab2Rates=false;
-console.log($scope);
-}
-}
-$scope.$apply(function(){$scope.$broadcast('selectTab',2);});
-$scope.btnImport='';
-}
-else{
-$scope.btnImport='false';
-}
-}
-//Uploadprogress
-elseif(type='2'){
-$scope.$apply(function($scope){
-$scope.files=files;
-});
-}
-}
-
-uploadService.uploadFile($scope.files,callObj,service);
-}
-
+/*
 $scope.submitRates=function(){
 //DAFRates
 vardafRatesSave=function(data){
@@ -157,7 +156,7 @@ varjson=JSON.stringify(data);
 $scope.getBlob=function(){
 returnnewBlob([json],{type:"application/json"});
 }
-
+*/
 
 }]);
 

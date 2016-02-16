@@ -1,0 +1,135 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="Font-Awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="css/UBSWidgets_NewBrand3.css">
+    <link rel="stylesheet" href="css/uwr.css">
+    <link rel="stylesheet" href="css/gj9.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <!-- CSS für upload button-->
+    <style type="text/css">
+
+
+    </style>
+
+
+</head>
+<body>
+
+<div class="chosen-container chosen-container-single gj9FilterNavigationInputControl uwr-advanced-dropdown
+            chosen-container-active chosen-with-drop " style="width: 180px;" title="" id="filter_sel_type_code_chosen">
+    <a class="chosen-single uwr-advanced-dropdown-text-selected" tabindex="-1" aos>
+        <span class="uwr-advanced-dropdown-text-selected uwr-advanced-dropdown-item uwr-advanced-dropdown-item-T">Abschlussdatum</span>
+        <div>
+            <b></b>
+        </div>
+    </a>
+    <div class="chosen-drop" style="left: 0px; top: 100%;">
+        <div class="chosen-search">
+            <input type="text" autocomplete="off">
+        </div>
+        <ul class="chosen-results">
+            <li class="active-result uwr-advanced-dropdown-text-list uwr-advanced-dropdown-text-selected uwr-advanced-dropdown-item uwr-advanced-dropdown-item-B" style="" data-option-array-index="0">Buchungsdatum</li>
+            <li class="active-result uwr-advanced-dropdown-text-list uwr-advanced-dropdown-text-selected uwr-advanced-dropdown-item uwr-advanced-dropdown-item-T
+                       result-selected" style="" data-option-array-index="1">Abschlussdatum</li>
+        </ul>
+    </div>
+
+    <div custom-select="s.id as s.name for s in states | filter: { name: $searchTerm }" ng-model="state" class="ng-pristine ng-untouched ng-valid dropdown custom-select open">
+        <a class="dropdown-toggle ng-scope" data-toggle="dropdown" href="" ng-class="{ disabled: disabled }" tabindex="0" aria-expanded="true">
+            <span class="ng-binding">Alabama</span>
+            <b></b>
+            <div class="menu" tabindex="-1"></div>
+        </a>
+        <div class="dropdown-backdrop">
+
+        </div>
+        <div class="dropdown-menu ng-scope">
+            <div stop-propagation="click" class="custom-select-search">
+                <input class="undefined ng-pristine ng-untouched ng-valid" type="text" autocomplete="off" ng-model="searchTerm">
+            </div>
+            <ul role="menu">
+                <li role="presentation" ng-repeat="s in matches" class="ng-scope"><a role="menuitem" tabindex="-1" href="" ng-click="select(s)" class="ng-binding">Alabama</a></li>
+                <li role="presentation" ng-repeat="s in matches" class="ng-scope"><a role="menuitem" tabindex="-1" href="" ng-click="select(s)" class="ng-binding">Alaska</a></li>
+                <li ng-hide="matches.length" class="empty-result ng-hide" stop-propagation="click"><em class="muted">
+                    <span ng-hide="searchTerm" class="ng-binding">There are no items to display</span>
+                    <span class="word-break ng-binding ng-hide" ng-show="searchTerm">No results match "$0"</span></em>
+                </li>
+            </ul>
+            <div class="custom-select-action"></div>
+        </div>
+    </div>
+
+
+
+</div>
+</body>
+<script>
+    angular.module('myApp',[])
+    .directive('aos', function() {
+      return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            var nextDiv = angular.element(element.next('div'));
+            var input   = angular.element(nextDiv.find('input'));
+            var parentDiv = angular.element(element[0].parentElement);
+
+            element.bind('click', function () {
+              console.log(element);
+
+              if (nextDiv[0].style.left == '-9999px'){
+                nextDiv[0].style.left ='0px';
+                input.focus();
+                console.log(input);
+              }
+              else nextDiv[0].style.left = '-9999px';
+
+              parentDiv.toggleClass('chosen-with-drop');
+              parentDiv.addClass('chosen-container-active');
+            });
+
+            input.bind('blur', function(){
+              nextDiv[0].style.left = '-9999px';
+              parentDiv.removeClass('chosen-container-active');
+            });
+            /*
+            element.bind('blur', function(){
+              nextDiv[0].style.left = '-9999px';
+              parentDiv.removeClass('chosen-container-active');
+            });
+            */
+        }
+      };
+    })
+
+    .directive('optionArrayIndex', function() {
+      return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+           var parentUl = angular.element(element[0].parentElement);
+
+           element.bind('mouseenter mouseleave', function () {
+
+              element.toggleClass('highlighted');
+
+            });
+           element.bind('click', function () {
+
+              element.toggleClass('highlighted');
+
+            });
+
+        }
+      };
+    })
+
+
+</script>
+</html>

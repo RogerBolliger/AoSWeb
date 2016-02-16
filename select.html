@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Angular Custom Select</title>
+
+        <meta name="description" content="overview &amp; stats" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+        <link rel="stylesheet" href="Font-Awesome-4.4.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/style.css" />
+
+        <script src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="js/customSelect.js"></script>
+        <script src="x2js/xml2json.min.js"></script>
+
+        <style>
+            body {
+                margin-top: 20px;
+                margin-bottom: 50px;
+            }
+
+            #parent{
+            position:absolute;
+            height:100%;
+            margin:0;
+            padding:0;
+            width:100%;
+            }
+            #div1{
+            position:relative;
+            float:left;
+            height:100%;
+            width:50%;
+            background-color:#A2A;
+            }
+            #div2{
+            position:relative;
+            float:left;
+            height:100%;
+            width:50%;
+            background-color:#BBB;
+            }
+
+
+        </style>
+    </head>
+
+    <body ng-app="Demo">
+        <div id="parent" class="container" ng-controller="DemoController">
+            <div id="div1">
+                <div style="width:180px" class="form-group">
+                    <label class="control-label">User</label>
+                    <input class="form-control" type="text" name="lastName" ng-model="ttUser.lastName" instrument-check>
+                </div>
+
+
+                <h2>Complex objects</h2>
+                <p>Selected state: {{ state }}</p>
+                <div custom-select="s.id as s.name for s in states | filter: { name: $searchTerm }" ng-model="state"></div>
+                <button type="button" class="btn" ng-click="reset()">Reset</button>
+                <button id="button1" type="button" class="btn" >Move</button>
+            </div>
+            <div id="div2">
+                <h3>Async</h3>
+                <div custom-select="a.lastName for a in searchAsync($searchTerm)" custom-select-options="{ 'async': true }" ng-model="custom2"></div>
+
+                <h3>Roger</h3>
+
+                <div class="custom-select">
+                    <a class="dropdown-toggle">
+                        <span></span>
+                        <b></b>
+                        <div class="menu"></div>
+                    </a>
+                    <!--
+                    <div class="dropdown-menu">
+                      <div class="custom-select-search">
+                          <input type="text">
+                      </div>
+                      <ul role="menu">
+                          <li role="presentation"><a role="menuitem">roger</a></li>
+                          <li><a>beat</a></li>
+                          <li><a>yuli</a></li>
+                      </ul>
+                    </div>
+                    -->
+                </div>
+            </div>
+        </div>
+        <!-- basic scripts -->
+
+
+        <script>
+            (function () {
+                var app = angular.module('Demo', ['AxelSoft']);
+
+                app.controller('DemoController', ['$scope', '$timeout', '$q', '$http', function ($scope, $timeout, $q, $http) {
+
+                    $("#div1").resizable();
+                    $('#div1').resize(function(){
+                       $('#div2').width($("#parent").width()-$("#div1").width());
+                    });
+                    $(window).resize(function(){
+                       $('#div2').width($("#parent").width()-$("#div1").width());
+                       $('#div1').height($("#parent").height());
+                    });
+
+                      $("#button1").click(function(){
+                        $("#div2").animate({left: '100px'});
+                      });
+
+
+                    $scope.searchAsync = function(term){
+                        var deferred = $q.defer();
+                        $http({method:'get', url:'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=getSmallUserlist' , params:{searchUser: term}}).then(
+                          function(data){
+                            var x2js = new X2JS();
+                            var data = x2js.xml_str2json(data.data);
+                            data = data.dsWebService.ttUser;
+                            console.log(data);
+                            deferred.resolve(data);
+                        });
+                        return deferred.promise;
+                    }
+
+                    $scope.state = 'AL';
+                    $scope.states = [
+                        { id: 'AL', name: 'Alabama' },
+                        { id: 'AK', name: 'Alaska' },
+                        { id: 'AS', name: 'American Samoa' },
+                        { id: 'AZ', name: 'Arizona' },
+                        { id: 'AR', name: 'Arkansas' },
+                        { id: 'CA', name: 'California' },
+                        { id: 'CO', name: 'Colorado' },
+                        { id: 'CT', name: 'Connecticut' },
+                        { id: 'DE', name: 'Delaware' },
+                        { id: 'DC', name: 'District Of Columbia' },
+                        { id: 'FM', name: 'Federated States Of Micronesia' },
+                        { id: 'FL', name: 'Florida' },
+                        { id: 'GA', name: 'Georgia' },
+                        { id: 'GU', name: 'Guam' },
+                        { id: 'HI', name: 'Hawaii' },
+                        { id: 'ID', name: 'Idaho' },
+                        { id: 'IL', name: 'Illinois' },
+                        { id: 'IN', name: 'Indiana' },
+                        { id: 'IA', name: 'Iowa' },
+                        { id: 'KS', name: 'Kansas' },
+                        { id: 'KY', name: 'Kentucky' },
+                        { id: 'LA', name: 'Louisiana' },
+                        { id: 'ME', name: 'Maine' },
+                        { id: 'MH', name: 'Marshall Islands' },
+                        { id: 'MD', name: 'Maryland' },
+                        { id: 'MA', name: 'Massachusetts' },
+                        { id: 'MI', name: 'Michigan' },
+                        { id: 'MN', name: 'Minnesota' },
+                        { id: 'MS', name: 'Mississippi' },
+                        { id: 'MO', name: 'Missouri' },
+                        { id: 'MT', name: 'Montana' },
+                        { id: 'NE', name: 'Nebraska' },
+                        { id: 'NV', name: 'Nevada' },
+                        { id: 'NH', name: 'New Hampshire' },
+                        { id: 'NJ', name: 'New Jersey' },
+                        { id: 'NM', name: 'New Mexico' },
+                        { id: 'NY', name: 'New York' },
+                        { id: 'NC', name: 'North Carolina' },
+                        { id: 'ND', name: 'North Dakota' },
+                        { id: 'MP', name: 'Northern Mariana Islands' },
+                        { id: 'OH', name: 'Ohio' },
+                        { id: 'OK', name: 'Oklahoma' },
+                        { id: 'OR', name: 'Oregon' },
+                        { id: 'PW', name: 'Palau' },
+                        { id: 'PA', name: 'Pennsylvania' },
+                        { id: 'PR', name: 'Puerto Rico' },
+                        { id: 'RI', name: 'Rhode Island' },
+                        { id: 'SC', name: 'South Carolina' },
+                        { id: 'SD', name: 'South Dakota' },
+                        { id: 'TN', name: 'Tennessee' },
+                        { id: 'TX', name: 'Texas' },
+                        { id: 'UT', name: 'Utah' },
+                        { id: 'VT', name: 'Vermont' },
+                        { id: 'VI', name: 'Virgin Islands' },
+                        { id: 'VA', name: 'Virginia' },
+                        { id: 'WA', name: 'Washington' },
+                        { id: 'WV', name: 'West Virginia' },
+                        { id: 'WI', name: 'Wisconsin' },
+                        { id: 'WY', name: 'Wyoming' }
+                    ];
+
+                    $scope.reset = function () {
+                        $scope.state = undefined;
+                    };
+
+                    $scope.isCustomEnabled = true;
+                    $scope.custom = ['Item 1', 'Item 2', 'Item 3'];
+                    $scope.customOptions = {
+                        displayText: 'This text is modifyable',
+                        emptyListText: 'Oops! The list is empty',
+                        emptySearchResultText: 'Sorry, couldn\'t find "$0"'
+                    };
+
+                    $scope.growable = ['Item 1', 'Item 2', 'Item 3'];
+                    $scope.growableOptions = {
+                        displayText: 'Select or add a new item...',
+                        addText: 'Add new item',
+                        onAdd: function () {
+                            var newItem = 'Item ' + ($scope.growable.length + 1);
+                            $scope.growable.push(newItem);
+                            return newItem;
+                        }
+                    };
+
+                    $scope.people = [
+                        { name: 'John Doe', phone: '555-123-456', picture: 'http://www.saintsfc.co.uk/images/common/bg_player_profile_default_big.png' },
+                        { name: 'Axel Zarate', phone: '888-777-6666', picture: 'https://avatars0.githubusercontent.com/u/4431445?s=60' },
+                        { name: 'Walter White', phone: '303-111-2222', picture: 'http://upstreamideas.org/wp-content/uploads/2013/10/ww.jpg' }
+                    ];
+                    
+                    $scope.nestedItemsLevel1 = ['Item 1', 'Item 2', 'Item 3'];
+                    $scope.level1Options = {
+                        onSelect: function (item) {
+                            var items = [];
+                            for (var i = 1; i <= 5; i++) {
+                                items.push(item + ': ' + 'Nested ' + i);
+                            }
+                            $scope.nestedItemsLevel2 = items;
+                        }
+                    };
+                    
+                    $scope.nestedItemsLevel2 = [];
+                }]);
+                app.directive('instrumentCheck',function($http,$q){
+  return{
+    restrict: 'A',
+    require: 'ngModel',
+    scope: {
+      user: '@'
+    },
+    link: function(scope, ele, attrs, ngModel){
+      console.log(ele);
+
+      ele.autocomplete({
+        source : function(request,response){
+
+          $http({method:'get', url:'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=getSmallUserlist' , params:{searchUser:request.term}}).then(
+            function(data){
+              var x2js = new X2JS();
+              var data = x2js.xml_str2json(data.data);
+              var name = [];
+              data = data.dsWebService.ttUser;
+              for (i=0;i<data.length;i++) {
+                name.push(data[i].lastName + ' ' + data[i].firstName);
+              }
+              console.log(name);
+              console.log(data);
+              response(name);
+            })
+
+        },
+        minLength: 1
+      });
+
+    }
+  }
+})
+
+            })();
+        </script>
+    </body>
+</html>

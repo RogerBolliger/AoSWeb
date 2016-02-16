@@ -1,6 +1,7 @@
 
 /********** Controller für Upload **********************/
-app.controller("uploadFilesCtrl", ['$scope', 'uploadService', 'userService', function ($scope, uploadService, userService) {
+var myApp = angular.module('myApp',[]);
+myApp.controller("uploadFilesCtrl", ['$scope', 'uploadService', 'userService', function ($scope, uploadService, userService) {
 
     var rootUrl = 'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=uploadFile';
 
@@ -89,7 +90,7 @@ app.controller("uploadFilesCtrl", ['$scope', 'uploadService', 'userService', fun
 }]);
 
 /********** Factory für Upload **********************/
-app.factory('uploadService', ['$http', function ($http) {
+myApp.factory('uploadService', ['$http', function ($http) {
     var svc = {};
 
     var rootUrl = 'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=uploadFile';
@@ -182,7 +183,7 @@ app.factory('uploadService', ['$http', function ($http) {
 
 }]);
 
-app.directive('myDownload', function ($compile) {
+myApp.directive('myDownload', function ($compile) {
     return {
         restrict:'E',
         scope:{ getUrlData:'&getData'},
@@ -198,7 +199,7 @@ app.directive('myDownload', function ($compile) {
     };
 });
 
-app.directive('stringToNumber', function() {
+myApp.directive('stringToNumber', function() {
   return {
     require: 'ngModel',
     link: function(scope, element, attrs, ngModel) {

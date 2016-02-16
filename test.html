@@ -1,49 +1,127 @@
 <html ng-app="myApp">
-<head>
+<head xmlns="http://www.w3.org/1999/html">
 
     <meta charset="iso-8859-1"/>
 
     <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
-    <link rel="stylesheet" href="Font-Awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/jquery-ui/jquery-ui.js"></script>
     <script src="bower_components/angular/angular.min.js"></script>
     <script src="x2js/xml2json.min.js"></script>
+    <style>
+        table {
+        width: 100%;
+        }
 
+        thead, tbody, tr, td, th { display: block; }
+
+        tr:after {
+        content: ' ';
+        display: block;
+        visibility: hidden;
+        clear: both;
+        }
+
+        thead th {
+        height: 30px;
+
+        /*text-align: left;*/
+        }
+
+        tbody {
+        height: 120px;
+        overflow-y: auto;
+        }
+
+        thead {
+        /* fallback */
+        }
+
+
+        tbody td, thead th {
+        width: 19.2%;
+        float: left;
+        }
+    </style>
 </head>
-
-<form name="dafValorForm" ng-controller="myCtrl">
-  <div class="bootstrap container-fluid">
-    <div style="width:180px" class="form-group">
-      <label class="control-label">User</label>
-      <input type="text" name="lastName" ng-model="ttUser.lastName" instrument-check>
+<body>
+<form novalidate name="myForm" ng-controller="myCtrl" id="roger">
+     <div class="form-group" ng-class="{'has-error': myForm.lastName.$invalid && myForm.lastName.$touched}" show-errors>
+       <label class="control-label">Name</label>
+       <input class="form-control" type="text" name="lastName" ng-model="lastName" required>
+       <span style="color:red" ng-show="myForm.lastName.$invalid && myForm.lastName.$error.required && myForm.lastName.$touched">Name is required</span>
+     </div>
+    <div class="form-group" ng-class="{'has-error': myForm.firstName.$invalid && myForm.firstName.$touched}" >
+        <label class="control-label">Name</label>
+        <input class="form-control" type="text" name="firstName" ng-model="firstName" required>
+        <span style="color:red" ng-show="myForm.firstName.$invalid && myForm.firstName.$error.required && myForm.firstName.$touched">First Name is required</span>
     </div>
-  </div>
+    <button ng-click="submit()">submit</button>
 </form>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Make</th>
+        <th>Model</th>
+        <th>Color</th>
+        <th>Year</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr style="100%" width="100%">
+        <td>Ford</td>
+        <td>Escort</td>
+        <td>Blue</td>
+        <td>2000</td>
+    </tr>
+    <tr>
+        <td >Ford</td>
+        <td >Escort</td>
+        <td >Blue</td>
+        <td >2000</td>
+    </tr>
+    <tr>
+        <td >Ford</td>
+        <td >Escort</td>
+        <td >Blue</td>
+        <td >2000</td>
+    </tr>
+    <tr>
+        <td >Ford</td>
+        <td >Escort</td>
+        <td >Blue</td>
+        <td >2000</td>
+    </tr>
+    </tbody>
 
+</table>
+</body>
 <script>
   angular.module('myApp',[])
     .controller('myCtrl',['$scope',function($scope){
 
-
-  function User(name, vorname){
-    return {
-      name: name,
-      vorname: vorname,
-      sayName: function(){console.log('my name is ' + name)}
+    $scope.submit = function(){
+      console.log($scope);
+      $scope.broadcast('form-error-check');
     }
-  }
-
-  var roger = new User('Bolliger', 'Roger');
 
 
-  console.log(roger.sayName());
-
-
-
-
-  }]);
+  }])
+  .directive('showErrors', function(){
+    return {
+      restrict: 'A',
+      link: function(scope, elem, attrs){
+        var form = angular.element(document.querySelector('#roger'));
+        var queryForm = $('form');
+        queryForm = angular.element.find($('form'));
+        console.log(queryForm);
+        console.log(scope[form[0].name]);
+      }
+    }
+  })
+  ;
 
 
 </script>

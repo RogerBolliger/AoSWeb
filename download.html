@@ -1,0 +1,150 @@
+<html ng-app="myApp">
+<head>
+
+    <meta charset="iso-8859-1"/>
+
+    <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+    <link rel="stylesheet" href="Font-Awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="x2js/xml2json.min.js"></script>
+
+</head>
+<script>
+var myApp = angular.module('myApp', []);
+myApp.directive('pdfDownload', function() {
+    return {
+        restrict: 'E',
+        //templateUrl: '/path/to/pdfDownload.tpl.html',
+        template: '<a href="" class="btn btn-primary" ng-click="downloadPdf()">Download</a>',
+        scope: true,
+        link: function(scope, element, attr) {
+            var anchor = element.children()[0];
+
+            // When the download starts, disable the link
+            scope.$on('download-start', function() {
+                $(anchor).attr('disabled', 'disabled');
+            });
+
+            // When the download finishes, attach the data to the link. Enable the link and change its appearance.
+            scope.$on('downloaded', function(event, data) {
+                $(anchor).attr({
+                    href: 'data:application/pdf;base64,' + data,
+                    download: attr.filename
+                })
+                    .removeAttr('disabled')
+                    .text('Save')
+                    .removeClass('btn-primary')
+                    .addClass('btn-success');
+
+                // Also overwrite the download pdf function to do nothing.
+                scope.downloadPdf = function() {
+                };
+            });
+        },
+        controller: ['$scope', '$attrs', '$http', function($scope, $attrs, $http) {
+            $scope.downloadPdf = function() {
+                $scope.$emit('download-start');
+                $http.get($attrs.url).then(function(response) {
+                    $scope.$emit('downloaded', response.data);
+                });
+            };
+        }]
+    }
+});
+myApp.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+
+            element.bind('change', function(){
+                scope.$apply(function(){
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+}]);
+
+myApp.service('fileUpload', ['$http', function ($http) {
+    this.uploadFileToUrl = function(file, uploadUrl){
+        var fd = new FormData();
+        fd.append('file', file);
+        var blob = new Blob([file]);
+        fd.append('fileBlob', blob);
+        $http.post(uploadUrl, fd, {
+            transformRequest: angular.identity,
+            headers: {'Content-Type': undefined}
+        })
+        .success(function(){
+
+        })
+        .error(function(){
+        });
+    }
+}]);
+
+myApp.controller('myCtrl', ['$scope', 'fileUpload', '$http', function($scope, fileUpload, $http){
+    var rootUrl = 'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=uploadFile';
+    $scope.uploadFile = function(){
+        var file = $scope.myFile;
+        console.log('file is ' );
+        console.dir(file);
+        var uploadUrl = rootUrl;
+        fileUpload.uploadFileToUrl(file, uploadUrl);
+    };
+    /*
+    $scope.downloadFile = function(){
+         $http({
+            url: 'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=downloadFile',
+            method: 'POST',
+            responseType: 'arraybuffer',
+            data: json, //this is your json data string
+            headers: {
+                'Content-type': 'application/json',
+                'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            }
+        }).success(function(data){
+            var blob = new Blob([data], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+            saveAs(blob, 'File_Name_With_Some_Unique_Id_Time' + '.xlsx');
+        }).error(function(){
+            //Some error log
+        });
+    }
+    */
+    /*
+    $scope.downloadFile = function(){
+      var rootUrl = 'http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=downloadFile';
+      $http({method: 'GET', url: rootUrl}).
+        success(function(data, status, headers, config) {
+            var anchor = angular.element('<a/>');
+            anchor.attr({
+                href: 'data:attachment/csv;charset=utf-8,' + encodeURI(data),
+                target: '_blank',
+                download: 'filename.csv'
+            })[0].click();
+        }).
+        error(function(data, status, headers, config) {
+            // if there's an error you should see it here
+        });
+    }
+    */
+
+
+}]);
+
+</script>
+    <div ng-controller = "myCtrl">
+        <input type="file" file-model="myFile"/>
+        <button ng-click="uploadFile()">upload me</button>
+        <button ng-click="downloadFile()">download me</button>
+    </div>
+    <pdf-download url="http://localhost:8080/cgi-bin/cgiip.exe/WService=wsbroker1/adz/user.p?serviceName=downloadFile" filename="my-awesome-pdf"></pdf-download>
+</body>
+</html>
