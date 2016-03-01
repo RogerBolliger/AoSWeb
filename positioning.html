@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Angular Custom Select</title>
+
+        <meta name="description" content="overview &amp; stats" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <link rel="stylesheet" href="bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css">
+        <link rel="stylesheet" href="Font-Awesome-4.4.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/style.css" />
+
+        <script src="bower_components/jquery/dist/jquery.js"></script>
+        <script src="bower_components/jquery-ui/jquery-ui.js"></script>
+
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="bower_components/bootstrap/js/tooltip.js"></script>
+        <script src="bower_components/angular/angular.min.js"></script>
+        <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls-1.1.2.js"></script>
+        <script src="js/customSelect.js"></script>
+        <script src="x2js/xml2json.min.js"></script>
+
+        <style>
+            body {
+                margin-top: 20px;
+                margin-bottom: 50px;
+            }
+
+            #parent{
+            height:100%;
+            margin:0;
+            padding:0;
+            width:100%;
+            }
+            #div0{
+            display: block;
+            height:100px;
+            width:900px;
+            background-color:#BBC;
+            display: normal;
+            }
+            #div1{
+            position:relative;
+            float:left;
+            height:400px;
+            width:900px;
+            background-color:#BAB;
+            }
+            #div2{
+            position:relative;
+            float:left;
+            height:400px;
+            width:450px;
+            background-color:#EEE;
+            }
+            #div3{
+            position:relative;
+            float:left;
+            height:400px;
+            width:450px;
+            background-color:#CCC;
+            }
+
+        </style>
+    </head>
+    <script>
+       $(document).ready(function(){
+          $("#button1").click(function(){
+            $("#div1").animate({
+              height: 'toggle'
+            });
+
+            var effect = 'slide';
+            var options = { direction: 'right' };
+            var duration = 500;
+            $('#div2').toggle(effect, options, duration);
+            var options = { direction: 'right' };
+            var duration = 500;
+            $('#div3').toggle(effect, options, duration);
+
+          });
+       });
+    </script>
+
+    <body >
+        <div id="parent" class="container" ng-controller="DemoController">
+
+
+            <div id="div0">
+                <h1>Title</h1><button id="button2" type="button" class="btn" >Action</button>
+            </div>
+            <div id="div1">
+                <h1>Browse</h1><button id="button1" type="button" class="btn" >Action</button>
+            </div>
+            <div id="div2" style="display: none">
+                <h1>left</h1>
+            </div>
+            <div id="div3" style="display: none">
+                <h1>right</h1>
+            </div>
+        </div>
+    </body>
+</html>
